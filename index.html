@@ -159,6 +159,24 @@
 
     <script>
         function captureQuizResult() {
+    let stream = document.documentElement.captureStream();
+    let recorder = new MediaRecorder(stream);
+    let chunks = [];
+
+    recorder.ondataavailable = (e) => chunks.push(e.data);
+    recorder.onstop = () => {
+        let blob = new Blob(chunks, { type: "video/webm" });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = "quiz_result.webm";
+        a.click();
+    };
+
+    recorder.start();
+    setTimeout(() => recorder.stop(), 15000); // 15 सेकंड की वीडियो रिकॉर्ड होगी
+        }
+        function captureQuizResult() {
     const quizElement = document.getElementById('quiz'); // पूरा क्विज़ बॉक्स  
     const button = document.querySelector('button'); // बटन हटाने के लिए  
 
