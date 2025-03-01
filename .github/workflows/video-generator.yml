@@ -18,15 +18,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg xserver-xorg xvfb libnss3
           sudo apt-get install -y --reinstall libasound2-plugins
+          sudo apt-get install -y chromium-browser
 
       - name: Install Puppeteer
-        run: npm install puppeteer
+        run: |
+          export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+          npm install puppeteer
 
       - name: Capture Video
         run: |
           Xvfb :99 -screen 0 1280x720x24 &
           export DISPLAY=:99
-          node capture.js --no-sandbox --disable-setuid-sandbox --headless=new
+          npx puppeteer --executable-path=/usr/bin/chromium-browser --no-sandbox --disable-setuid-sandbox capture.js
 
       - name: Upload Video
         uses: actions/upload-artifact@v4
