@@ -12,15 +12,13 @@ jobs:
 
     steps:
       - name: Set up job
-        run: echo "Starting video generation job..."
+        run: echo "Starting the video generation job..."
 
       - name: Checkout Repo
         uses: actions/checkout@v4
 
       - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable xvfb ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y xvfb
 
       - name: Install Node.js and Puppeteer
         uses: actions/setup-node@v4
@@ -28,20 +26,25 @@ jobs:
           node-version: 20
 
       - name: Install NPM Packages
-        run: npm install
+        run: |
+          npm cache clean --force
+          rm -f package-lock.json
+          npm install --legacy-peer-deps
+
+      - name: Install Puppeteer Manually
+        run: npm install puppeteer --unsafe-perm=true --allow-root
 
       - name: Capture Video
         run: |
-          export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-          export PUPPETEER_EXECUTABLE_PATH=$(which google-chrome-stable)
           Xvfb :99 -screen 0 1280x720x24 &
-          npm run capture -- --no-sandbox --disable-setuid-sandbox
+          export DISPLAY=:99
+          node generate-video.js  # ⚠️ अपना सही स्क्रिप्ट नाम चेक करें!
 
       - name: Upload Video
         uses: actions/upload-artifact@v4
         with:
           name: generated-video
-          path: output/video.mp4
+          path: output.mp4  # ⚠️ यहां अपना सही आउटपुट वीडियो पाथ डालें!
 
       - name: Complete job
         run: echo "Video generation completed successfully!"
