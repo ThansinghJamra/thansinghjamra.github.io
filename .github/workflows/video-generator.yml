@@ -29,7 +29,7 @@ jobs:
         run: |
           Xvfb :99 -screen 0 1280x720x24 &
           export DISPLAY=:99
-          node capture.js
+          node capture.js --no-sandbox
 
       - name: Upload Video
         uses: actions/upload-artifact@v4
