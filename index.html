@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ccapture.js/1.1.0/CCapture.all.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GK Quiz Generator</title>
@@ -158,6 +160,31 @@
     </div>
 
     <script>
+        function captureQuizResult() {
+    let quizElement = document.body; // पूरी स्क्रीन कैप्चर करने के लिए
+    let fps = 30; // वीडियो FPS
+    let duration = 15; // 15 सेकंड की वीडियो
+    let frames = fps * duration;
+
+    let capturer = new CCapture({ format: "webm", framerate: fps });
+    capturer.start();
+
+    let frameCount = 0;
+    function captureFrame() {
+        if (frameCount < frames) {
+            html2canvas(quizElement).then((canvas) => {
+                capturer.capture(canvas);
+                frameCount++;
+                requestAnimationFrame(captureFrame);
+            });
+        } else {
+            capturer.stop();
+            capturer.save();
+        }
+    }
+
+    captureFrame();
+        }
         function captureQuizResult() {
     let stream = document.documentElement.captureStream();
     let recorder = new MediaRecorder(stream);
