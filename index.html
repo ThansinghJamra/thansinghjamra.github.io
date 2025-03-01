@@ -160,6 +160,14 @@
     </div>
 
     <script>
+        <script>
+function testCapture() {
+    html2canvas(document.body).then(canvas => {
+        document.body.appendChild(canvas);
+    });
+}
+</script>
+<button onclick="testCapture()">टेस्ट स्क्रीनशॉट</button>
         function captureQuizResult() {
     let quizElement = document.body; // पूरी स्क्रीन कैप्चर करने के लिए
     let fps = 30; // वीडियो FPS
