@@ -1,56 +1,23 @@
-name: Generate Video from HTML
+name: Video Generation Workflow
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+on: push
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up job
-        run: echo "Starting the video generation workflow"
-
-      - name: Checkout Repo
+      - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y xvfb ffmpeg
-
-      - name: Install Node.js and Puppeteer
+      
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install NPM Packages
-        run: |
-          if [ -f package.json ]; then
-            npm install --legacy-peer-deps
-          else
-            echo "Error: package.json file not found!"
-            exit 1
-          fi
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Install Puppeteer Manually (if required)
-        run: |
-          npm install puppeteer --save
-          sudo apt-get install -y libatk1.0-0 libx11-xcb1 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2
-
-      - name: Capture Video
-        run: xvfb-run --server-args="-screen 0 1280x720x24" node capture.js
-
-      - name: Upload Video
-        uses: actions/upload-artifact@v3
-        with:
-          name: generated-video
-          path: output/video.mp4
-
-      - name: Complete job
-        run: echo "Video generation workflow completed successfully!"
+      - name: Run Script
+        run: node index.js
         
