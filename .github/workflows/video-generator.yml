@@ -20,4 +20,13 @@ jobs:
 
       - name: Run Script
         run: node index.js
-        
+
+      - name: Convert Image to 10-Second Video
+        run: ffmpeg -loop 1 -i quiz.png -c:v libx264 -t 10 -pix_fmt yuv420p output.mp4
+
+      - name: Upload Video Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: generated-video
+          path: output.mp4
+          
