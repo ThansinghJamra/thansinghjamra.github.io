@@ -16,12 +16,13 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg xvfb libnss3 libatk1.0-0 libx11-xcb1 \
-          libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxi6 libxrandr2 \
-          libgbm1 libglib2.0-0 libnss3 libpango-1.0-0 libatk-bridge2.0-0 \
-          libxss1 libgtk-3-0 fonts-liberation libasound2 libdrm2 \
-          libxcb-dri3-0 libxshmfence1 libx11-xcb1 libxtst6 \
-          --no-install-recommends
+          sudo apt-get install -y ffmpeg xvfb \
+          libnss3 libatk1.0-0 libx11-xcb1 libxcomposite1 \
+          libxcursor1 libxdamage1 libxfixes3 libxi6 libxrandr2 \
+          libgbm1 libglib2.0-0 libnss3 libpango-1.0-0 \
+          libatk-bridge2.0-0 libxss1 libgtk-3-0 fonts-liberation \
+          libdrm2 libxcb-dri3-0 libxshmfence1 libx11-xcb1 \
+          libxtst6 libasound2-plugins alsa-utils --no-install-recommends
 
       - name: Install Node.js and Puppeteer
         run: |
