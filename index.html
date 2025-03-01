@@ -157,6 +157,29 @@
     </div>
 
     <script>
+        let mediaRecorder;
+let recordedChunks = [];
+
+function startRecording() {
+    let quizElement = document.getElementById("quiz"); // रिकॉर्ड होने वाला हिस्सा
+    let stream = quizElement.captureStream(60); // 60 FPS पर रिकॉर्डिंग
+    
+    mediaRecorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+    mediaRecorder.ondataavailable = event => recordedChunks.push(event.data);
+    
+    mediaRecorder.onstop = () => {
+        let blob = new Blob(recordedChunks, { type: "video/webm" });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "quiz-result.webm";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    mediaRecorder.start();
+    setTimeout(() => mediaRecorder.stop(), 15000); // 15 सेकंड बाद स्टॉप
+}
         function generateQuiz() {
             let categoryText = document.getElementById('category-input').value;
             let questionText = document.getElementById('question-input').value;
