@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK Quiz Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Yatra+One&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #c2a87d;
+            font-family: 'Yatra One', cursive;
+        }
+        .option {
+    background-color: green;
+    color: white;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    text-align: left;
+    font-size: 18px;
+    border: 1px solid black; /* ब्लैक बॉर्डर */
+}
+        .quiz-container {
+            background:rgba(255, 255, 255, 0.3); /* हल्का Transparent */
+            backdrop-filter:blur(8px); /* Blur Effect */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: none;
+            text-align: center;
+            width: 350px;
+            position: relative;
+            top:-80px;
+        }
+.option {
+    font-size: 20px; /* टेक्स्ट बड़ा किया */
+    font-weight: bold; /* टेक्स्ट बोल्ड किया */
+}
+        .quiz-header {
+            font-weight: bold;
+            font-size: 24px;
+            border: 2px solid black;
+            display: inline-block;
+            padding: 5px 15px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px #999;
+        }
+        .category {
+            color: black;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        #question-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+        }
+#exam-year {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    color: red;
+    font-weight: bold;
+    margin-top: 5px;
+    text-align: right;
+    width: 100%;
+}
+        .option {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            background: green;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            position: relative;
+        }
+        .option span {
+            background: black;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        .correct {
+            animation: blink 1s infinite alternate;
+            position: relative;
+        }
+        .correct::after {
+            content: " ✓";
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        @keyframes blink {
+            0% { background: orange; }
+            100% { background: green; }
+        }
+        .timer-container {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(orange 0deg, black 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            margin: 10px auto;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-setup">
+        <h2>Quiz Generator</h2>
+        <input type="text" id="category-input" placeholder="क्विज़ की श्रेणी (जैसे भारतीय इतिहास)" size="40">
+        <input type="text" id="question-input" placeholder="अपना प्रश्न लिखें..." size="40">
+        <input type="text" id="exam-year-input" placeholder="परीक्षा और वर्ष (जैसे SSC Mat. 1999,2002)" size="40">
+        <div id="option-inputs">
+            <input type="text" class="option-text" placeholder="Option A"> <input type="radio" name="correct-option" value="0"><br>
+            <input type="text" class="option-text" placeholder="Option B"> <input type="radio" name="correct-option" value="1"><br>
+            <input type="text" class="option-text" placeholder="Option C"> <input type="radio" name="correct-option" value="2"><br>
+            <input type="text" class="option-text" placeholder="Option D"> <input type="radio" name="correct-option" value="3"><br>
+        </div>
+        <button onclick="generateQuiz()">Generate Quiz</button>
+    </div>
+
+    <div class="quiz-container" id="quiz" style="display:none;">
+        <p class="category" id="quiz-category"></p> <!-- कैटेगरी अब सबसे ऊपर होगी -->
+        <h2 class="quiz-header">Buddhi Path</h2>
+        <div id="question-container">
+            <span id="question"></span>
+            <span id="exam-year"></span>
+        </div>
+        <div id="options"></div>
+        <div class="timer-container" id="timer">8</div>
+    </div>
+
+    <script>
+        function generateQuiz() {
+            let categoryText = document.getElementById('category-input').value;
+            let questionText = document.getElementById('question-input').value;
+            let examYearText = document.getElementById('exam-year-input').value;
+            let options = document.querySelectorAll('.option-text');
+            let correctIndex = document.querySelector('input[name="correct-option"]:checked')?.value;
+            
+            let categoryElement = document.getElementById('quiz-category');
+            let questionElement = document.getElementById('question');
+            let examYearElement = document.getElementById('exam-year');
+            let timerElement = document.getElementById('timer');
+            
+            categoryElement.innerText = categoryText;
+            questionElement.innerText = "";
+            examYearElement.innerText = examYearText;
+            timerElement.style.display = 'none';
+            
+            typeText(questionElement, questionText, () => {
+                timerElement.style.display = 'flex';
+                startTimer(correctIndex);
+            });
+            
+            let optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            options.forEach((opt, index) => {
+                let optionDiv = document.createElement('div');
+                optionDiv.classList.add('option');
+                optionDiv.innerHTML = `<span>${String.fromCharCode(0x24B6 + index)}</span> ${opt.value}`;
+                if (index == correctIndex) optionDiv.setAttribute('data-correct', 'true');
+                optionDiv.onclick = function() { checkAnswer(this); };
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            document.getElementById('quiz').style.display = 'block';
+            document.getElementById('quiz-setup').style.display = 'none';
+        }
+
+        function typeText(element, text, callback, i = 0) {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                setTimeout(() => typeText(element, text, callback, i + 1), 100);
+            } else {
+                callback();
+            }
+        }
+
+        function startTimer(correctIndex) {
+            let timeLeft = 8;
+            let timerElement = document.getElementById('timer');
+            let timerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.innerText = timeLeft;
+                timerElement.style.background = `conic-gradient(orange ${timeLeft * 45}deg, black 0deg)`;
+                
+                if (timeLeft === 0) {
+                    clearInterval(timerInterval);
+                    showCorrectAnswer();
+                }
+            }, 1000);
+        }
+
+        function showCorrectAnswer() {
+            let correctOption = document.querySelector(".option[data-correct='true']");
+            if (correctOption) {
+                correctOption.classList.add('correct');
+            }
+        }
+    </script>
+</body>
+</html>
