@@ -1,0 +1,32 @@
+name: Generate Video from HTML
+
+on:  
+  push:  
+    branches: [main]  
+  workflow_dispatch:  
+
+jobs:  
+  build:  
+    runs-on: ubuntu-latest  
+
+    steps:  
+      - name: Checkout Repo  
+        uses: actions/checkout@v2  
+
+      - name: Install Dependencies  
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg xserver-xorg xvfb  
+
+      - name: Install Puppeteer  
+        run: npm install puppeteer  
+
+      - name: Capture Video  
+        run: |  
+          Xvfb :99 -screen 0 1280x720x24 &  
+          export DISPLAY=:99  
+          node capture.js  
+
+      - name: Upload Video  
+        uses: actions/upload-artifact@v2  
+        with:  
+          name: quiz-video  
+          path: output.mp4  
