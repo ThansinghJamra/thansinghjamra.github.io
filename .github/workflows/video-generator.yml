@@ -2,7 +2,8 @@ name: Generate Video from HTML
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -10,34 +11,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set up job
+        run: echo "Starting video generation job..."
+
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg xvfb \
-          libnss3 libatk1.0-0 libx11-xcb1 libxcomposite1 \
-          libxcursor1 libxdamage1 libxfixes3 libxi6 libxrandr2 \
-          libgbm1 libglib2.0-0 libnss3 libpango-1.0-0 \
-          libatk-bridge2.0-0 libxss1 libgtk-3-0 fonts-liberation \
-          libdrm2 libxcb-dri3-0 libxshmfence1 libx11-xcb1 \
-          libxtst6 libasound2-plugins alsa-utils --no-install-recommends
+          sudo apt-get install -y google-chrome-stable xvfb ffmpeg
 
       - name: Install Node.js and Puppeteer
-        run: |
-          export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-          npm install puppeteer
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install NPM Packages
+        run: npm install
 
       - name: Capture Video
         run: |
+          export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+          export PUPPETEER_EXECUTABLE_PATH=$(which google-chrome-stable)
           Xvfb :99 -screen 0 1280x720x24 &
-          export DISPLAY=:99
-          node capture.js --no-sandbox --disable-setuid-sandbox
+          npm run capture -- --no-sandbox --disable-setuid-sandbox
 
       - name: Upload Video
         uses: actions/upload-artifact@v4
         with:
-          name: quiz-video
-          path: output.mp4
-          
+          name: generated-video
+          path: output/video.mp4
+
+      - name: Complete job
+        run: echo "Video generation completed successfully!"
+        
