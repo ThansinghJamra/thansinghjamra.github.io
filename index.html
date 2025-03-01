@@ -157,6 +157,30 @@
     </div>
 
     <script>
+        let stream = document.documentElement.captureStream();
+let recorder = new MediaRecorder(stream);
+let chunks = [];
+
+recorder.ondataavailable = event => chunks.push(event.data);
+recorder.onstop = () => {
+    let blob = new Blob(chunks, { type: 'video/webm' });
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = 'quiz-result.webm';
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(url);
+};
+
+function startRecording() {
+    chunks = [];
+    recorder.start();
+    setTimeout(() => recorder.stop(), 15000);
+}
+
+// क्विज़ पूरा होते ही रिकॉर्डिंग स्टार्ट करने के लिए
+document.getElementById('quiz-container').addEventListener('click', startRecording);
         let mediaRecorder;
 let recordedChunks = [];
 
