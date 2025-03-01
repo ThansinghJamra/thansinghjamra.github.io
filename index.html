@@ -158,6 +158,38 @@
     </div>
 
     <script>
+        function captureQuizResult() {
+    const quizElement = document.getElementById('quiz'); // पूरा क्विज़ बॉक्स  
+    const button = document.querySelector('button'); // बटन हटाने के लिए  
+
+    button.style.display = 'none'; // बटन हटाएं ताकि वीडियो में न दिखे  
+   
+    html2canvas(quizElement).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+
+        // वीडियो बनाने के लिए
+        const video = document.createElement("video");
+        const stream = canvas.captureStream(30); // 30 FPS वीडियो रिकॉर्डिंग
+        const recorder = new MediaRecorder(stream);
+        let chunks = [];
+
+        recorder.ondataavailable = e => chunks.push(e.data);
+        recorder.onstop = () => {
+            const blob = new Blob(chunks, { type: "video/mp4" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "quiz_result.mp4"; // डाउनलोड होने वाली वीडियो का नाम
+            a.click();
+        };
+
+        recorder.start();
+        setTimeout(() => {
+            recorder.stop();
+            button.style.display = 'block'; // वीडियो के बाद बटन वापस लाओ
+        }, 15000); // 15 सेकंड की वीडियो
+    });
+        }
         async function captureQuizResult() {
     let quizContainer = document.getElementById("quiz"); // क्विज़ का HTML एरिया
     let stream = quizContainer.captureStream(30); // 30 FPS पर रिकॉर्डिंग शुरू
