@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ccapture.js/1.1.0/CCapture.all.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GK Quiz Generator</title>
@@ -146,7 +144,6 @@
         </div>
         <button onclick="generateQuiz()">Generate Quiz</button>
     </div>
-    <button onclick="captureQuizResult()">डाउनलोड रिजल्ट वीडियो</button>
 
     <div class="quiz-container" id="quiz" style="display:none;">
         <p class="category" id="quiz-category"></p> <!-- कैटेगरी अब सबसे ऊपर होगी -->
@@ -160,170 +157,6 @@
     </div>
 
     <script>
-        <script>
-function testCapture() {
-    html2canvas(document.body).then(canvas => {
-        document.body.appendChild(canvas);
-    });
-}
-</script>
-    window.onload = function () {
-    if (typeof html2canvas !== "undefined") {
-        console.log("✅ html2canvas लोड हो गया!");
-    } else {
-        console.log("❌ html2canvas लोड नहीं हुआ!");
-    }
-
-    if (typeof CCapture !== "undefined") {
-        console.log("✅ CCapture लोड हो गया!");
-    } else {
-        console.log("❌ CCapture लोड नहीं हुआ!");
-    }
-};
-<button onclick="testCapture()">टेस्ट स्क्रीनशॉट</button>
-        function captureQuizResult() {
-    let quizElement = document.body; // पूरी स्क्रीन कैप्चर करने के लिए
-    let fps = 30; // वीडियो FPS
-    let duration = 15; // 15 सेकंड की वीडियो
-    let frames = fps * duration;
-
-    let capturer = new CCapture({ format: "webm", framerate: fps });
-    capturer.start();
-
-    let frameCount = 0;
-    function captureFrame() {
-        if (frameCount < frames) {
-            html2canvas(quizElement).then((canvas) => {
-                capturer.capture(canvas);
-                frameCount++;
-                requestAnimationFrame(captureFrame);
-            });
-        } else {
-            capturer.stop();
-            capturer.save();
-        }
-    }
-
-    captureFrame();
-        }
-        function captureQuizResult() {
-    let stream = document.documentElement.captureStream();
-    let recorder = new MediaRecorder(stream);
-    let chunks = [];
-
-    recorder.ondataavailable = (e) => chunks.push(e.data);
-    recorder.onstop = () => {
-        let blob = new Blob(chunks, { type: "video/webm" });
-        let url = URL.createObjectURL(blob);
-        let a = document.createElement("a");
-        a.href = url;
-        a.download = "quiz_result.webm";
-        a.click();
-    };
-
-    recorder.start();
-    setTimeout(() => recorder.stop(), 15000); // 15 सेकंड की वीडियो रिकॉर्ड होगी
-        }
-        function captureQuizResult() {
-    const quizElement = document.getElementById('quiz'); // पूरा क्विज़ बॉक्स  
-    const button = document.querySelector('button'); // बटन हटाने के लिए  
-
-    button.style.display = 'none'; // बटन हटाएं ताकि वीडियो में न दिखे  
-   
-    html2canvas(quizElement).then(canvas => {
-        const imgData = canvas.toDataURL("image/png");
-
-        // वीडियो बनाने के लिए
-        const video = document.createElement("video");
-        const stream = canvas.captureStream(30); // 30 FPS वीडियो रिकॉर्डिंग
-        const recorder = new MediaRecorder(stream);
-        let chunks = [];
-
-        recorder.ondataavailable = e => chunks.push(e.data);
-        recorder.onstop = () => {
-            const blob = new Blob(chunks, { type: "video/mp4" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "quiz_result.mp4"; // डाउनलोड होने वाली वीडियो का नाम
-            a.click();
-        };
-
-        recorder.start();
-        setTimeout(() => {
-            recorder.stop();
-            button.style.display = 'block'; // वीडियो के बाद बटन वापस लाओ
-        }, 15000); // 15 सेकंड की वीडियो
-    });
-        }
-        async function captureQuizResult() {
-    let quizContainer = document.getElementById("quiz"); // क्विज़ का HTML एरिया
-    let stream = quizContainer.captureStream(30); // 30 FPS पर रिकॉर्डिंग शुरू
-    
-    let recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
-    let chunks = [];
-    
-    recorder.ondataavailable = (event) => chunks.push(event.data);
-    recorder.onstop = () => {
-        let blob = new Blob(chunks, { type: "video/webm" });
-        let url = URL.createObjectURL(blob);
-        
-        let a = document.createElement("a");
-        a.href = url;
-        a.download = "quiz-result.webm"; // वीडियो फाइल का नाम
-        a.click();
-    };
-    
-    recorder.start();
-    setTimeout(() => recorder.stop(), 15000); // 15 सेकंड के बाद वीडियो सेव होगा
-        }
-        let stream = document.documentElement.captureStream();
-let recorder = new MediaRecorder(stream);
-let chunks = [];
-
-recorder.ondataavailable = event => chunks.push(event.data);
-recorder.onstop = () => {
-    let blob = new Blob(chunks, { type: 'video/webm' });
-    let url = URL.createObjectURL(blob);
-    let a = document.createElement('a');
-    a.href = url;
-    a.download = 'quiz-result.webm';
-    document.body.appendChild(a);
-    a.click();
-    URL.revokeObjectURL(url);
-};
-
-function startRecording() {
-    chunks = [];
-    recorder.start();
-    setTimeout(() => recorder.stop(), 15000);
-}
-
-// क्विज़ पूरा होते ही रिकॉर्डिंग स्टार्ट करने के लिए
-document.getElementById('quiz-container').addEventListener('click', startRecording);
-        let mediaRecorder;
-let recordedChunks = [];
-
-function startRecording() {
-    let quizElement = document.getElementById("quiz"); // रिकॉर्ड होने वाला हिस्सा
-    let stream = quizElement.captureStream(60); // 60 FPS पर रिकॉर्डिंग
-    
-    mediaRecorder = new MediaRecorder(stream, { mimeType: "video/webm" });
-    mediaRecorder.ondataavailable = event => recordedChunks.push(event.data);
-    
-    mediaRecorder.onstop = () => {
-        let blob = new Blob(recordedChunks, { type: "video/webm" });
-        let link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "quiz-result.webm";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    mediaRecorder.start();
-    setTimeout(() => mediaRecorder.stop(), 15000); // 15 सेकंड बाद स्टॉप
-}
         function generateQuiz() {
             let categoryText = document.getElementById('category-input').value;
             let questionText = document.getElementById('question-input').value;
