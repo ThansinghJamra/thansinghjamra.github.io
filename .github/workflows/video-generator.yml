@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -12,13 +15,13 @@ jobs:
 
     steps:
       - name: Set up job
-        run: echo "Starting the video generation job..."
+        run: echo "Starting the video generation workflow"
 
       - name: Checkout Repo
         uses: actions/checkout@v4
 
       - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb ffmpeg
 
       - name: Install Node.js and Puppeteer
         uses: actions/setup-node@v4
@@ -27,25 +30,27 @@ jobs:
 
       - name: Install NPM Packages
         run: |
-          npm cache clean --force
-          rm -f package-lock.json
-          npm install --legacy-peer-deps
+          if [ -f package.json ]; then
+            npm install --legacy-peer-deps
+          else
+            echo "Error: package.json file not found!"
+            exit 1
+          fi
 
-      - name: Install Puppeteer Manually
-        run: npm install puppeteer --unsafe-perm=true --allow-root
+      - name: Install Puppeteer Manually (if required)
+        run: |
+          npm install puppeteer --save
+          sudo apt-get install -y libatk1.0-0 libx11-xcb1 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2
 
       - name: Capture Video
-        run: |
-          Xvfb :99 -screen 0 1280x720x24 &
-          export DISPLAY=:99
-          node generate-video.js  # ⚠️ अपना सही स्क्रिप्ट नाम चेक करें!
+        run: xvfb-run --server-args="-screen 0 1280x720x24" node capture.js
 
       - name: Upload Video
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: generated-video
-          path: output.mp4  # ⚠️ यहां अपना सही आउटपुट वीडियो पाथ डालें!
+          path: output/video.mp4
 
       - name: Complete job
-        run: echo "Video generation completed successfully!"
+        run: echo "Video generation workflow completed successfully!"
         
