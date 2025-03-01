@@ -167,6 +167,19 @@ function testCapture() {
     });
 }
 </script>
+    window.onload = function () {
+    if (typeof html2canvas !== "undefined") {
+        console.log("✅ html2canvas लोड हो गया!");
+    } else {
+        console.log("❌ html2canvas लोड नहीं हुआ!");
+    }
+
+    if (typeof CCapture !== "undefined") {
+        console.log("✅ CCapture लोड हो गया!");
+    } else {
+        console.log("❌ CCapture लोड नहीं हुआ!");
+    }
+};
 <button onclick="testCapture()">टेस्ट स्क्रीनशॉट</button>
         function captureQuizResult() {
     let quizElement = document.body; // पूरी स्क्रीन कैप्चर करने के लिए
