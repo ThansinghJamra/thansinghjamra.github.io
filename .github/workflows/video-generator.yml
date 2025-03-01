@@ -14,17 +14,17 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Dependencies
-        run: sudo apt-get update
-    sudo apt-get install -y ffmpeg xserver-xorg xvfb libnss3
-    sudo apt-get install -y --reinstall libasound2-plugins
-
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg xserver-xorg xvfb libnss3
+          sudo apt-get install -y --reinstall libasound2-plugins
 
       - name: Install Puppeteer
         run: npm install puppeteer
 
       - name: Capture Video
         run: |
-          Xvfb :99 -screen 0 1280x720x24 & 
+          Xvfb :99 -screen 0 1280x720x24 &
           export DISPLAY=:99
           node capture.js --no-sandbox --disable-setuid-sandbox --headless=new
 
@@ -33,3 +33,4 @@ jobs:
         with:
           name: quiz-video
           path: output.mp4
+          
