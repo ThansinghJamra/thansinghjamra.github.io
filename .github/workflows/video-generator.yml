@@ -1,35 +1,44 @@
 name: Video Generation Workflow
 
-on:
-  push:
-    branches:
-      - main
+on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
+      
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
+      
       - name: Install Dependencies
         run: npm install
-
+      
       - name: Install FFmpeg
         run: sudo apt update && sudo apt install -y ffmpeg
 
+      - name: Generate Quiz Image
+        run: node generate_quiz.js  # अगर Python स्क्रिप्ट है तो `python generate_quiz.py`
+      
+      - name: Debug: List files
+        run: ls -lah  # चेक करने के लिए कि quiz.png बनी या नहीं
+      
       - name: Convert Image to 10-Second Video
-        run: ffmpeg -loop 1 -i quiz.png -c:v libx264 -t 10 -pix_fmt yuv420p output.mp4
-
+        run: |
+          if [ -f "quiz.png" ]; then
+            ffmpeg -loop 1 -i quiz.png -c:v libx264 -t 10 -pix_fmt yuv420p output.mp4
+          else
+            echo "Error: quiz.png not found!"
+            exit 1
+          fi
+      
       - name: Upload Video Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: quiz-video
+          name: generated-video
           path: output.mp4
           
