@@ -24,8 +24,10 @@ jobs:
       - name: Generate Quiz Image
         run: node generate_quiz.js  # अगर Python स्क्रिप्ट है तो `python generate_quiz.py`
       
-      - name: Debug: List files
-        run: ls -lah  # चेक करने के लिए कि quiz.png बनी या नहीं
+      - name: Debug - List files
+        run: |
+          echo "Checking files..."
+          ls -lah  # चेक करने के लिए कि quiz.png बनी या नहीं
       
       - name: Convert Image to 10-Second Video
         run: |
