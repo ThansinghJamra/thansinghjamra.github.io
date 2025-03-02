@@ -1,0 +1,29 @@
+name: Generate Quiz Video
+
+on: [push, workflow_dispatch]
+
+jobs:
+  generate_video:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install canvas fs
+
+      - name: Generate Quiz Image
+        run: node generate_quiz.js
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: quiz-image
+          path: quiz.png
+          
