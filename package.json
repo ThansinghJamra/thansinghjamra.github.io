@@ -1,0 +1,12 @@
+{
+  "name": "gk-quiz-generator",
+  "version": "1.0.0",
+  "description": "GK Quiz Generator for HD Video Creation",
+  "main": "generate_quiz.js",
+  "scripts": {
+    "start": "node generate_quiz.js"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2"
+  }
+}
