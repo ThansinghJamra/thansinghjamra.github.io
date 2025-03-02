@@ -1,6 +1,9 @@
 name: Generate Video
 
-on: [push, workflow_dispatch]
+on: 
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -8,15 +11,22 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install Dependencies
         run: npm install
 
       - name: Run Script
         run: node generate_quiz.js
+
+      - name: Upload Quiz Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: quiz-image
+          path: quiz.png
+          
