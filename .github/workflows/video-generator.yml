@@ -16,13 +16,13 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm ci  # तेज और reliable dependency install
+        run: npm ci  # तेज़ और reliable dependency install
 
       - name: Install FFmpeg
         run: sudo apt update && sudo apt install -y ffmpeg
 
       - name: Generate Quiz Image
-        run: node generate_quiz.js  # अगर generate_quiz.js किसी folder में है, तो path सही करें
+        run: node generate_quiz.js  # अगर generate_quiz.js किसी folder में है, तो path सही करे
 
       - name: Debug: List files
         run: ls -lah  # चेक करने के लिए कि quiz.png बनी या नहीं
@@ -41,4 +41,5 @@ jobs:
         with:
           name: generated-video
           path: output.mp4
+          
           
