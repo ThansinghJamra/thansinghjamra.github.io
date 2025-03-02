@@ -5,30 +5,28 @@ on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-      
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      
+
       - name: Install Dependencies
-        run: npm install
-      
+        run: npm ci  # तेज और reliable dependency install
+
       - name: Install FFmpeg
         run: sudo apt update && sudo apt install -y ffmpeg
 
       - name: Generate Quiz Image
-        run: node generate_quiz.js  # अगर Python स्क्रिप्ट है तो `python generate_quiz.py`
-      
-      - name: Debug - List files
-        run: |
-          echo "Checking files..."
-          ls -lah  # चेक करने के लिए कि quiz.png बनी या नहीं
-      
+        run: node generate_quiz.js  # अगर generate_quiz.js किसी folder में है, तो path अपडेट करो
+
+      - name: Debug: List files
+        run: ls -lah  # चेक करने के लिए कि quiz.png बनी या नहीं
+
       - name: Convert Image to 10-Second Video
         run: |
           if [ -f "quiz.png" ]; then
@@ -37,7 +35,7 @@ jobs:
             echo "Error: quiz.png not found!"
             exit 1
           fi
-      
+
       - name: Upload Video Artifact
         uses: actions/upload-artifact@v4
         with:
