@@ -25,7 +25,7 @@ jobs:
         run: ffmpeg -loop 1 -i quiz.png -c:v libx264 -t 10 -pix_fmt yuv420p output.mp4
 
       - name: Upload Video Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: generated-video
           path: output.mp4
