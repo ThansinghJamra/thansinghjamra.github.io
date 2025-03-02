@@ -1,35 +1,43 @@
 name: Video Generation Workflow
 
-on: 
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+on:  
+  push:  
+    branches: [main]  
+  pull_request:  
+    branches: [main]  
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+jobs:  
+  build:  
+    runs-on: ubuntu-latest  
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+    steps:  
+      - name: Set up job  
+        uses: actions/checkout@v3  
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install Node.js  
+        uses: actions/setup-node@v3  
+        with:  
+          node-version: '20'  
 
-      - name: Install FFmpeg  # यह स्टेप ffmpeg इंस्टॉल करेगा
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install Dependencies  
+        run: npm install  
 
-      - name: Convert Image to 10-Second Video
-        run: ffmpeg -loop 1 -i quiz.png -c:v libx264 -t 10 -pix_fmt yuv420p output.mp4
+      - name: Install FFmpeg  
+        run: sudo apt-get install ffmpeg -y  
 
-      - name: Upload Video Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: output-video
-          path: output.mp4
+      - name: Install ImageMagick  
+        run: sudo apt-get install imagemagick -y  
+
+      - name: Generate Default Quiz Image  
+        run: |  
+          convert -size 1280x720 xc:white -gravity center -pointsize 72 -fill black -annotate 0 'GK Quiz' quiz.png  
+
+      - name: Convert Image to 10-Second Video  
+        run: ffmpeg -loop 1 -i quiz.png -c:v libx264 -t 10 -pix_fmt yuv420p output.mp4  
+
+      - name: Upload Video Artifact  
+        uses: actions/upload-artifact@v3  
+        with:  
+          name: generated-video  
+          path: output.mp4  
           
