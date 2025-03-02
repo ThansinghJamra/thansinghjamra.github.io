@@ -1,9 +1,6 @@
 name: Generate Video
 
-on: 
-  push:
-    branches:
-      - main
+on: push
 
 jobs:
   build:
@@ -11,22 +8,34 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 16
 
       - name: Install Dependencies
         run: npm install
 
-      - name: Run Script
-        run: node generate_quiz.js
+      - name: Run Script to Generate Image
+        run: node generate_quiz_image.js
 
       - name: Upload Quiz Image
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: quiz-image
-          path: quiz.png
+          path: quiz-image.png
+
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Generate 15-second Video from Image
+        run: ffmpeg -loop 1 -i quiz-image.png -c:v libx264 -t 15 -pix_fmt yuv420p -vf "scale=1080:1920" quiz-video.mp4
+
+      - name: Upload Generated Video
+        uses: actions/upload-artifact@v3
+        with:
+          name: quiz-video
+          path: quiz-video.mp4
           
